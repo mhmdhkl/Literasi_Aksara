@@ -1,5 +1,5 @@
 import 'package:http/http.dart' as http;
-import 'package:news_app/common/constants.dart';
+import 'package:tugasbesar_berita/common/constants.dart';
 
 class ApiService {
   var client = http.Client();
