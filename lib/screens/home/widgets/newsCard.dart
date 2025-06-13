@@ -4,17 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:tugasbesar_berita/common/colors.dart';
 import 'package:tugasbesar_berita/models/news_model.dart';
+import 'package:tugasbesar_berita/screens/news_info/news_info.dart';
 import 'package:skeletons/skeletons.dart';
-
-// Placeholder for NewsInfo screen
-class NewsInfo extends StatelessWidget {
-  final News news;
-  const NewsInfo({super.key, required this.news});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text(news.title ?? '')));
-  }
-}
 
 class NewsCard extends StatefulWidget {
   final News article;
@@ -31,7 +22,12 @@ class _NewsCardState extends State<NewsCard> {
     Size size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () => {
-        // Navigator will be added in next step
+        Navigator.push(
+          context,
+          CupertinoPageRoute(
+            builder: (context) => NewsInfo(news: widget.article),
+          ),
+        ),
       },
       child: Padding(
         padding: const EdgeInsets.all(10.0),
