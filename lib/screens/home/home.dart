@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tugasbesar_berita/common/colors.dart';
+import 'package:tugasbesar_berita/common/common.dart';
+import 'package:tugasbesar_berita/common/widgets/no_connectivity.dart';
+import 'package:tugasbesar_berita/models/listdata_model.dart';
+import 'package:tugasbesar_berita/models/news_model.dart' as m;
+import 'package:tugasbesar_berita/providers/news_provider.dart';
 import 'package:tugasbesar_berita/screens/home/widgets/CategoryItem.dart';
 
 class Home extends StatefulWidget {
@@ -21,6 +26,38 @@ class _HomeState extends State<Home> {
   ];
 
   int activeCategory = 0;
+  int page = 1;
+  List<m.News> articles = [];
+
+  @override
+  void initState() {
+    super.initState();
+    checkConnectivity();
+  }
+
+  Future<void> checkConnectivity() async {
+    if (await getInternetStatus()) {
+      getNewsData();
+    } else {
+      Navigator.of(context, rootNavigator: true)
+          .push(MaterialPageRoute(builder: (context) => const NoConnectivity()))
+          .then((value) => checkConnectivity());
+    }
+  }
+
+  Future<void> getNewsData() async {
+    ListData listData = await NewsProvider().GetEverything(
+      categories[activeCategory].toString(),
+      page++,
+    );
+    if (listData.status) {
+      List<m.News> items = listData.data as List<m.News>;
+      if (items.isNotEmpty) {
+        articles.addAll(items);
+        if (mounted) setState(() {});
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,13 +101,16 @@ class _HomeState extends State<Home> {
                   onClick: () {
                     setState(() {
                       activeCategory = index;
+                      articles = [];
+                      page = 1;
                     });
+                    getNewsData();
                   },
                 ),
               ),
             ),
             const SizedBox(height: 20),
-            // Placeholder for news list
+            // News list will be here
           ],
         ),
       ),
