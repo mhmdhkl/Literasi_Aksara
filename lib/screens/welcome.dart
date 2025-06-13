@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tugasbesar_berita/common/colors.dart';
 import 'package:tugasbesar_berita/common/common.dart';
-import 'package:tugasbesar_berita/common/no_connectivity.dart';
+import 'package:tugasbesar_berita/common/widgets/no_connectivity.dart';
 import 'package:tugasbesar_berita/screens/home/home.dart';
 
 class Welcome extends StatefulWidget {
