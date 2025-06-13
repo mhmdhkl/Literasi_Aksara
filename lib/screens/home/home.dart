@@ -6,6 +6,7 @@ import 'package:tugasbesar_berita/models/listdata_model.dart';
 import 'package:tugasbesar_berita/models/news_model.dart' as m;
 import 'package:tugasbesar_berita/providers/news_provider.dart';
 import 'package:tugasbesar_berita/screens/home/widgets/CategoryItem.dart';
+import 'package:tugasbesar_berita/screens/home/widgets/newsCard.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -110,7 +111,14 @@ class _HomeState extends State<Home> {
               ),
             ),
             const SizedBox(height: 20),
-            // News list will be here
+            SizedBox(
+              height: size.height * 0.75,
+              child: ListView.builder(
+                itemCount: articles.length,
+                itemBuilder: (context, index) =>
+                    NewsCard(article: articles[index]),
+              ),
+            ),
           ],
         ),
       ),
