@@ -3,13 +3,11 @@ import 'package:tugasbesar_berita/common/constants.dart';
 
 class ApiService {
   var client = http.Client();
-  String endpoint = Constants.API_BASE_URL + Constants.API_PREFIX;
-  String apiKey = Constants.API_KEY;
 
-  Map<String, String> headers = {
-    "Content-Type": "application/json; charset=UTF-8",
-    "Accept": "application/json",
-  };
+  String endpoint = Constants.apiBaseUrl + Constants.apiPrefix;
+  String apiKey = Constants.apiKey;
+
+  Map<String, String> headers = {"Accept": "application/json"};
 
   Future<http.Response> getTopHeadlines() {
     return client.get(

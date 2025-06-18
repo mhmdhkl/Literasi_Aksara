@@ -5,7 +5,6 @@ import 'package:jiffy/jiffy.dart';
 import 'package:tugasbesar_berita/common/colors.dart';
 import 'package:tugasbesar_berita/models/news_model.dart';
 import 'package:tugasbesar_berita/screens/news_info/news_info.dart';
-import 'package:skeletons/skeletons.dart';
 
 class NewsCard extends StatefulWidget {
   final News article;
@@ -50,17 +49,12 @@ class _NewsCardState extends State<NewsCard> {
                           int? frame,
                           bool wasSynchronouslyLoaded,
                         ) {
-                          if (wasSynchronouslyLoaded) return child;
-                          if (frame == null) {
-                            return Center(
-                              child: Skeleton(
-                                isLoading: true,
-                                skeleton: SkeletonParagraph(),
-                                child: const Text(''),
-                              ),
-                            );
+                          if (wasSynchronouslyLoaded) {
+                            return child;
                           }
-                          return child;
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         },
                   ),
                   Padding(

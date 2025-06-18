@@ -3,8 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:tugasbesar_berita/common/colors.dart';
 import 'package:tugasbesar_berita/models/news_model.dart';
-import 'package:skeletons/skeletons.dart';
-import 'package:url_launcher/url_launcher.dart'; // Import
+import 'package:url_launcher/url_launcher.dart';
 
 class NewsInfo extends StatefulWidget {
   final News news;
@@ -49,17 +48,10 @@ class _NewsInfoState extends State<NewsInfo> {
                     int? frame,
                     bool wasSynchronouslyLoaded,
                   ) {
-                    if (wasSynchronouslyLoaded) return child;
-                    if (frame == null) {
-                      return Center(
-                        child: Skeleton(
-                          isLoading: true,
-                          skeleton: SkeletonParagraph(),
-                          child: const Text(''),
-                        ),
-                      );
+                    if (wasSynchronouslyLoaded) {
+                      return child;
                     }
-                    return child;
+                    return const Center(child: CircularProgressIndicator());
                   },
             ),
             Padding(

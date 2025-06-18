@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:loadmore/loadmore.dart';
 import 'package:tugasbesar_berita/common/colors.dart';
 import 'package:tugasbesar_berita/common/common.dart';
 import 'package:tugasbesar_berita/common/widgets/no_connectivity.dart';
 import 'package:tugasbesar_berita/models/listdata_model.dart';
 import 'package:tugasbesar_berita/models/news_model.dart' as m;
 import 'package:tugasbesar_berita/providers/news_provider.dart';
-import 'package:tugasbesar_berita/screens/home/widgets/CategoryItem.dart';
-import 'package:tugasbesar_berita/screens/home/widgets/newsCard.dart';
+import 'package:tugasbesar_berita/screens/home/widgets/category_item.dart';
+import 'package:tugasbesar_berita/screens/home/widgets/news_card.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -27,7 +28,10 @@ class _HomeState extends State<Home> {
   ];
 
   int activeCategory = 0;
+
   int page = 1;
+  bool isFinish = false;
+  bool data = false;
   List<m.News> articles = [];
 
   @override
@@ -40,23 +44,41 @@ class _HomeState extends State<Home> {
     if (await getInternetStatus()) {
       getNewsData();
     } else {
+      // Ditambahkan pengecekan 'mounted' untuk memperbaiki error
+      if (!mounted) return;
       Navigator.of(context, rootNavigator: true)
           .push(MaterialPageRoute(builder: (context) => const NoConnectivity()))
           .then((value) => checkConnectivity());
     }
   }
 
-  Future<void> getNewsData() async {
-    ListData listData = await NewsProvider().GetEverything(
+  Future<bool> getNewsData() async {
+    ListData listData = await NewsProvider().getEverything(
       categories[activeCategory].toString(),
       page++,
     );
+
     if (listData.status) {
       List<m.News> items = listData.data as List<m.News>;
+      data = true;
+
+      if (mounted) {
+        setState(() {});
+      }
+
+      if (items.length == listData.totalContent) {
+        isFinish = true;
+      }
+
       if (items.isNotEmpty) {
         articles.addAll(items);
-        if (mounted) setState(() {});
+        setState(() {});
+        return true;
+      } else {
+        return false;
       }
+    } else {
+      return false;
     }
   }
 
@@ -104,6 +126,8 @@ class _HomeState extends State<Home> {
                       activeCategory = index;
                       articles = [];
                       page = 1;
+                      isFinish = false;
+                      data = false;
                     });
                     getNewsData();
                   },
@@ -112,11 +136,18 @@ class _HomeState extends State<Home> {
             ),
             const SizedBox(height: 20),
             SizedBox(
-              height: size.height * 0.75,
-              child: ListView.builder(
-                itemCount: articles.length,
-                itemBuilder: (context, index) =>
-                    NewsCard(article: articles[index]),
+              height: size.height,
+              child: LoadMore(
+                isFinish: isFinish,
+                onLoadMore: getNewsData,
+                whenEmptyLoad: true,
+                delegate: const DefaultLoadMoreDelegate(),
+                textBuilder: DefaultLoadMoreTextBuilder.english,
+                child: ListView.builder(
+                  itemCount: articles.length,
+                  itemBuilder: (context, index) =>
+                      NewsCard(article: articles[index]),
+                ),
               ),
             ),
           ],

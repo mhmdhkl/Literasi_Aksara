@@ -13,7 +13,8 @@ class _NoConnectivityState extends State<NoConnectivity> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return WillPopScope(
+    return PopScope(
+      canPop: false,
       child: Scaffold(
         body: Container(
           width: size.width,
@@ -45,9 +46,6 @@ class _NoConnectivityState extends State<NoConnectivity> {
           ),
         ),
       ),
-      onWillPop: () {
-        return Future.value(false);
-      },
     );
   }
 }
