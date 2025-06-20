@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tugasbesar_berita/common/colors.dart';
-import 'package:tugasbesar_berita/providers/news_provider.dart';
-import 'package:tugasbesar_berita/screens/home/widgets/news_card.dart';
-import 'package:tugasbesar_berita/screens/management/management_screen.dart';
+import 'package:Aksara_Literasi/common/colors.dart';
+import 'package:Aksara_Literasi/providers/news_provider.dart';
+import 'package:Aksara_Literasi/screens/home/widgets/news_card.dart';
+import 'package:Aksara_Literasi/screens/management/management_screen.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});

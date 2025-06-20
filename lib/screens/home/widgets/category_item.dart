@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tugasbesar_berita/common/colors.dart';
+import 'package:Aksara_Literasi/common/colors.dart';
 
 class CategoryItem extends StatefulWidget {
   final String categoryName;

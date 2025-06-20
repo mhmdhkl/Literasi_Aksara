@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:tugasbesar_berita/common/colors.dart';
-import 'package:tugasbesar_berita/models/news_model.dart';
-import 'package:tugasbesar_berita/screens/news_info/news_info.dart';
+import 'package:Aksara_Literasi/common/colors.dart';
+import 'package:Aksara_Literasi/models/news_model.dart';
+import 'package:Aksara_Literasi/screens/news_info/news_info.dart';
 
 class NewsCard extends StatelessWidget {
   final News article;

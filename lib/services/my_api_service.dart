@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:tugasbesar_berita/common/constants.dart';
+import 'package:Aksara_Literasi/common/constants.dart';
 import 'package:http/http.dart' as http;
 
 class MyApiService {

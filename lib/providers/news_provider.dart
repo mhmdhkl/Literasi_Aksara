@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:tugasbesar_berita/models/news_model.dart';
-import 'package:tugasbesar_berita/services/my_api_service.dart';
+import 'package:Aksara_Literasi/models/news_model.dart';
+import 'package:Aksara_Literasi/services/my_api_service.dart';
 
 class NewsProvider extends ChangeNotifier {
   final MyApiService _myApiService = MyApiService();
