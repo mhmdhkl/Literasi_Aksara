@@ -1,29 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:jiffy/jiffy.dart';
-import 'package:tugasbesar_berita/common/colors.dart';
-import 'package:tugasbesar_berita/models/news_model.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
+import 'package:Aksara_Literasi/common/colors.dart';
+import 'package:Aksara_Literasi/models/news_model.dart';
+import 'package:Aksara_Literasi/providers/news_provider.dart';
+import 'package:Aksara_Literasi/screens/add_edit_news_screen.dart';
 
-class NewsInfo extends StatefulWidget {
+class NewsInfo extends StatelessWidget {
   final News news;
 
   const NewsInfo({super.key, required this.news});
 
-  @override
-  State<NewsInfo> createState() => _NewsInfoState();
-}
+  void _deleteNews(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Hapus Berita?'),
+        content: const Text('Apakah Anda yakin ingin menghapus berita ini?'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Batal')),
+          TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Hapus')),
+        ],
+      ),
+    );
 
-class _NewsInfoState extends State<NewsInfo> {
-  Future<void> _launchInBrowser(Uri url) async {
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      throw Exception('Could not launch $url');
+    if (confirmed == true) {
+      final newsProvider = Provider.of<NewsProvider>(context, listen: false);
+      if (context.mounted) {
+        final success = await newsProvider.deleteNews(news.id!);
+        if (success && context.mounted) {
+          Navigator.of(context).pop();
+        }
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    const String corsProxy = "https://corsproxy.io/?";
+
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
@@ -32,138 +52,80 @@ class _NewsInfoState extends State<NewsInfo> {
           onTap: () => Navigator.pop(context),
           child: const Icon(Icons.arrow_back_sharp, color: AppColors.white),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit, color: AppColors.white),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => AddEditNewsScreen(news: news),
+              ));
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete, color: AppColors.white),
+            onPressed: () => _deleteNews(context),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
           children: [
-            Image.network(
-              widget.news.urlToImage.toString(),
-              fit: BoxFit.contain,
-              width: size.width,
-              frameBuilder:
-                  (
-                    BuildContext context,
-                    Widget child,
-                    int? frame,
-                    bool wasSynchronouslyLoaded,
-                  ) {
-                    if (wasSynchronouslyLoaded) {
-                      return child;
-                    }
-                    return const Center(child: CircularProgressIndicator());
-                  },
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 10,
-                bottom: 10,
-                left: 8,
-                right: 8,
+            if (news.urlToImage != null && news.urlToImage!.isNotEmpty)
+              Image.network(
+                corsProxy + Uri.encodeComponent(news.urlToImage!),
+                fit: BoxFit.contain,
+                width: size.width,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 220,
+                    width: size.width,
+                    color: Colors.grey[200],
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.broken_image, color: Colors.grey, size: 50),
+                        SizedBox(height: 8),
+                        Text('Gagal memuat gambar',
+                            style: TextStyle(color: Colors.grey)),
+                      ],
+                    ),
+                  );
+                },
               ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.news.title.toString(),
+                    news.title ?? 'Tanpa Judul',
                     style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 15),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.person,
-                            color: AppColors.black,
-                            size: 20,
-                          ),
-                          SizedBox(
-                            width: size.width / 2,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                widget.news.author.toString(),
-                                style: GoogleFonts.poppins(
-                                  color: AppColors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.access_time,
-                            color: AppColors.black,
-                            size: 20,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            child: Text(
-                              Jiffy.parse(
-                                widget.news.publishedAt.toString(),
-                              ).fromNow().toString(),
-                              style: GoogleFonts.poppins(fontSize: 14),
-                            ),
-                          ),
-                        ],
+                      const Icon(Icons.person,
+                          color: AppColors.black, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          news.author ?? 'Tanpa Penulis',
+                          style: GoogleFonts.poppins(color: AppColors.black),
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 20),
                   Text(
-                    widget.news.content.toString(),
+                    news.content ?? 'Konten tidak tersedia.',
                     style: GoogleFonts.poppins(fontSize: 14),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 50),
-            GestureDetector(
-              onTap: () {
-                _launchInBrowser(Uri.parse(widget.news.url.toString()));
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "View full article",
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const Icon(
-                    Icons.arrow_forward,
-                    color: AppColors.black,
-                    size: 14,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.facebook, size: 26),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.email_outlined, size: 26),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.wechat_sharp, size: 26),
-                ),
-              ],
             ),
           ],
         ),

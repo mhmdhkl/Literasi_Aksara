@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:tugasbesar_berita/common/colors.dart';
-import 'package:tugasbesar_berita/common/common.dart';
-import 'package:tugasbesar_berita/common/widgets/no_connectivity.dart';
-import 'package:tugasbesar_berita/screens/home/home.dart';
+import 'package:Aksara_Literasi/common/colors.dart';
+import 'package:Aksara_Literasi/common/common.dart';
+import 'package:Aksara_Literasi/common/widgets/no_connectivity.dart';
+import 'package:Aksara_Literasi/screens/home/home.dart';
 
 class Welcome extends StatefulWidget {
   const Welcome({super.key});

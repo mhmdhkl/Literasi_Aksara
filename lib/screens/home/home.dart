@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:loadmore/loadmore.dart';
+import 'package:provider/provider.dart';
 import 'package:tugasbesar_berita/common/colors.dart';
-import 'package:tugasbesar_berita/common/common.dart';
-import 'package:tugasbesar_berita/common/widgets/no_connectivity.dart';
-import 'package:tugasbesar_berita/models/listdata_model.dart';
-import 'package:tugasbesar_berita/models/news_model.dart' as m;
 import 'package:tugasbesar_berita/providers/news_provider.dart';
-import 'package:tugasbesar_berita/screens/home/widgets/category_item.dart';
 import 'package:tugasbesar_berita/screens/home/widgets/news_card.dart';
+import 'package:tugasbesar_berita/screens/management/management_screen.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -17,137 +13,62 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<String> categories = [
-    'business',
-    'entertainment',
-    'general',
-    'health',
-    'science',
-    'sports',
-    'technology',
-  ];
-
-  int activeCategory = 0;
-
-  int page = 1;
-  bool isFinish = false;
-  bool data = false;
-  List<m.News> articles = [];
-
   @override
   void initState() {
     super.initState();
-    checkConnectivity();
-  }
-
-  Future<void> checkConnectivity() async {
-    if (await getInternetStatus()) {
-      getNewsData();
-    } else {
-      // Ditambahkan pengecekan 'mounted' untuk memperbaiki error
-      if (!mounted) return;
-      Navigator.of(context, rootNavigator: true)
-          .push(MaterialPageRoute(builder: (context) => const NoConnectivity()))
-          .then((value) => checkConnectivity());
-    }
-  }
-
-  Future<bool> getNewsData() async {
-    ListData listData = await NewsProvider().getEverything(
-      categories[activeCategory].toString(),
-      page++,
-    );
-
-    if (listData.status) {
-      List<m.News> items = listData.data as List<m.News>;
-      data = true;
-
-      if (mounted) {
-        setState(() {});
-      }
-
-      if (items.length == listData.totalContent) {
-        isFinish = true;
-      }
-
-      if (items.isNotEmpty) {
-        articles.addAll(items);
-        setState(() {});
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<NewsProvider>(context, listen: false).fetchManagedNews();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: 100,
+        leadingWidth: 150,
         leading: Center(
           child: Padding(
             padding: const EdgeInsets.only(left: 20),
-            child: Image.asset(
-              "assets/images/logo.png",
-              fit: BoxFit.contain,
-              color: AppColors.white,
-            ),
+            child: Image.asset("assets/images/logo.png", fit: BoxFit.contain),
           ),
         ),
-        backgroundColor: AppColors.black,
-        elevation: 5,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Icon(Icons.search, size: 34, color: AppColors.white),
+        backgroundColor: Colors.white,
+        elevation: 1,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search, size: 28, color: AppColors.black),
+            onPressed: () {/* Logika pencarian */},
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined,
+                size: 28, color: AppColors.black),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const ManagementScreen()));
+            },
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: RefreshIndicator(
+        onRefresh: () => Provider.of<NewsProvider>(context, listen: false)
+            .fetchManagedNews(),
         child: Column(
           children: [
-            const SizedBox(height: 20),
-            SizedBox(
-              height: 50,
-              width: size.width,
-              child: ListView.builder(
-                itemCount: categories.length,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (BuildContext context, int index) => CategoryItem(
-                  index: index,
-                  categoryName: categories[index],
-                  activeCategory: activeCategory,
-                  onClick: () {
-                    setState(() {
-                      activeCategory = index;
-                      articles = [];
-                      page = 1;
-                      isFinish = false;
-                      data = false;
-                    });
-                    getNewsData();
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              height: size.height,
-              child: LoadMore(
-                isFinish: isFinish,
-                onLoadMore: getNewsData,
-                whenEmptyLoad: true,
-                delegate: const DefaultLoadMoreDelegate(),
-                textBuilder: DefaultLoadMoreTextBuilder.english,
-                child: ListView.builder(
-                  itemCount: articles.length,
-                  itemBuilder: (context, index) =>
-                      NewsCard(article: articles[index]),
-                ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: Consumer<NewsProvider>(
+                builder: (context, newsProvider, child) {
+                  if (newsProvider.isManagedLoading &&
+                      newsProvider.managedArticles.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final articles = newsProvider.managedArticles;
+                  return ListView.builder(
+                    itemCount: articles.length,
+                    itemBuilder: (context, index) =>
+                        NewsCard(article: articles[index]),
+                  );
+                },
               ),
             ),
           ],

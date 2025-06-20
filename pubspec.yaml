@@ -1,4 +1,4 @@
-name: tugasbesar_berita
+name: Aksara_Literasi
 description: "A new Flutter project."
 publish_to: 'none'
 version: 1.0.0+1
@@ -11,13 +11,14 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   flutter_dotenv: ^5.0.2
-  http: ^1.0.0
+  http: ^1.4.0
   google_fonts: ^4.0.5
   jiffy: ^6.1.0
   loadmore: ^2.1.0
   fluttertoast: ^8.2.2
   url_launcher: ^6.1.5
   connectivity_plus: ^4.0.1
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:

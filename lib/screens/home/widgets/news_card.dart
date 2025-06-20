@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jiffy/jiffy.dart';
@@ -6,141 +5,125 @@ import 'package:tugasbesar_berita/common/colors.dart';
 import 'package:tugasbesar_berita/models/news_model.dart';
 import 'package:tugasbesar_berita/screens/news_info/news_info.dart';
 
-class NewsCard extends StatefulWidget {
+class NewsCard extends StatelessWidget {
   final News article;
-
   const NewsCard({super.key, required this.article});
 
   @override
-  State<NewsCard> createState() => _NewsCardState();
-}
-
-class _NewsCardState extends State<NewsCard> {
-  @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    // GANTI DENGAN PROXY BARU YANG LEBIH STABIL
+    const String corsProxy = "https://corsproxy.io/?";
+
     return GestureDetector(
-      onTap: () => {
+      onTap: () {
         Navigator.push(
           context,
-          CupertinoPageRoute(
-            builder: (context) => NewsInfo(news: widget.article),
-          ),
-        ),
+          MaterialPageRoute(builder: (context) => NewsInfo(news: article)),
+        );
       },
       child: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Card(
-          elevation: 0.2,
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Container(
-              alignment: Alignment.centerLeft,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Image.network(
-                    widget.article.urlToImage.toString(),
-                    fit: BoxFit.contain,
-                    frameBuilder:
-                        (
-                          BuildContext context,
-                          Widget child,
-                          int? frame,
-                          bool wasSynchronouslyLoaded,
-                        ) {
-                          if (wasSynchronouslyLoaded) {
-                            return child;
-                          }
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Text(
-                      widget.article.title.toString(),
-                      style: GoogleFonts.poppins(
-                        textStyle: const TextStyle(
-                          color: AppColors.black,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+          elevation: 4,
+          shadowColor: Colors.black26,
+          clipBehavior: Clip.antiAlias,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (article.urlToImage != null && article.urlToImage!.isNotEmpty)
+                Image.network(
+                  // Menggunakan proxy baru
+                  corsProxy + Uri.encodeComponent(article.urlToImage!),
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 200,
+                      color: Colors.grey[200],
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
-                            Icons.person,
-                            color: AppColors.black,
-                            size: 20,
-                          ),
-                          SizedBox(
-                            width: size.width / 2,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                widget.article.author.toString(),
-                                overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.poppins(
-                                  textStyle: const TextStyle(
-                                    color: AppColors.black,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ),
+                          Icon(Icons.broken_image,
+                              color: Colors.grey, size: 50),
+                          SizedBox(height: 8),
+                          Text(
+                            'Gagal memuat gambar',
+                            style: TextStyle(color: Colors.grey),
                           ),
                         ],
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const Icon(
-                            Icons.access_time,
-                            color: AppColors.black,
-                            size: 20,
+                    );
+                  },
+                ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ... (sisa kode tidak berubah)
+                    Text(
+                      article.title ?? 'No Title',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              const Icon(Icons.person_outline,
+                                  size: 16, color: AppColors.lightGray),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  article.author ?? 'Unknown Author',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                      color: AppColors.lightGray, fontSize: 12),
+                                ),
+                              ),
+                            ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            child: Text(
-                              Jiffy.parse(
-                                widget.article.publishedAt.toString(),
-                              ).fromNow().toString(),
+                        ),
+                        Row(
+                          children: [
+                            const Icon(Icons.access_time,
+                                size: 16, color: AppColors.lightGray),
+                            const SizedBox(width: 4),
+                            Text(
+                              Jiffy.parse(article.publishedAt ??
+                                      DateTime.now().toIso8601String())
+                                  .fromNow(),
                               style: GoogleFonts.poppins(
-                                textStyle: const TextStyle(
-                                  color: AppColors.black,
-                                  fontWeight: FontWeight.w500,
-                                  overflow: TextOverflow.fade,
-                                ),
-                              ),
+                                  color: AppColors.lightGray, fontSize: 12),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Text(
-                      widget.article.description.toString(),
-                      style: GoogleFonts.poppins(
-                        textStyle: const TextStyle(
-                          color: AppColors.black,
-                          fontWeight: FontWeight.w400,
+                          ],
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      article.content ?? 'No content available.',
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        color: AppColors.lighterBlack,
+                        height: 1.5,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
+                  ],
+                ),
+              )
+            ],
           ),
         ),
       ),

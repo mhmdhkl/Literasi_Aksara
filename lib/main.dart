@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:tugasbesar_berita/screens/welcome.dart';
+import 'package:provider/provider.dart';
+import 'package:Aksara_Literasi/providers/news_provider.dart';
+import 'package:Aksara_Literasi/screens/welcome.dart';
 
 Future main() async {
   await dotenv.load(fileName: "assets/.env");
@@ -12,14 +14,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'News App',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (context) => NewsProvider(),
+      child: MaterialApp(
+        title: 'News App',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: const Welcome(),
       ),
-      home: const Welcome(),
     );
   }
 }

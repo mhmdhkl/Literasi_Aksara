@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tugasbesar_berita/common/colors.dart';
+import 'package:Aksara_Literasi/common/colors.dart';
 
 class NoConnectivity extends StatefulWidget {
   const NoConnectivity({super.key});
@@ -38,7 +38,7 @@ class _NoConnectivityState extends State<NoConnectivity> {
               ),
               SizedBox(height: size.height * 0.020),
               Text(
-                "There is no internet connection. \n Please check your internet connection",
+                "Tidak ada sambungan internet. \n Silakan periksa koneksi internet Anda",
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(fontSize: 20),
               ),
