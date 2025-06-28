@@ -15,9 +15,11 @@ class _ManagementScreenState extends State<ManagementScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<NewsProvider>(context, listen: false).fetchManagedNews();
-    });
+    // Data sudah di-fetch di halaman Home, kita tidak perlu fetch ulang
+    // kecuali jika ingin memastikan data selalu terbaru saat masuk halaman ini.
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   Provider.of<NewsProvider>(context, listen: false).fetchManagedNews();
+    // });
   }
 
   @override
@@ -31,17 +33,20 @@ class _ManagementScreenState extends State<ManagementScreen> {
       ),
       body: Consumer<NewsProvider>(
         builder: (context, newsProvider, child) {
+          // MODIFIKASI: Gunakan filteredArticles
           if (newsProvider.isManagedLoading &&
-              newsProvider.managedArticles.isEmpty) {
+              newsProvider.filteredArticles.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 
           return RefreshIndicator(
             onRefresh: () => newsProvider.fetchManagedNews(),
             child: ListView.builder(
-              itemCount: newsProvider.managedArticles.length,
+              // MODIFIKASI: Gunakan filteredArticles
+              itemCount: newsProvider.filteredArticles.length,
               itemBuilder: (context, index) {
-                final news = newsProvider.managedArticles[index];
+                // MODIFIKASI: Gunakan filteredArticles
+                final news = newsProvider.filteredArticles[index];
                 return Card(
                   margin:
                       const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
@@ -56,9 +61,14 @@ class _ManagementScreenState extends State<ManagementScreen> {
                           icon:
                               const Icon(Icons.edit, color: Colors.blueAccent),
                           onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(
                               builder: (_) => AddEditNewsScreen(news: news),
-                            ));
+                            ))
+                                .then((_) {
+                              // Muat ulang data setelah kembali dari halaman edit, jika diperlukan
+                              newsProvider.fetchManagedNews();
+                            });
                           },
                         ),
                         IconButton(
@@ -79,9 +89,11 @@ class _ManagementScreenState extends State<ManagementScreen> {
                                   TextButton(
                                     child: const Text('Hapus'),
                                     onPressed: () {
-                                      Provider.of<NewsProvider>(context,
-                                              listen: false)
-                                          .deleteNews(news.id!);
+                                      if (news.id != null) {
+                                        Provider.of<NewsProvider>(context,
+                                                listen: false)
+                                            .deleteNews(news.id!);
+                                      }
                                       Navigator.of(ctx).pop();
                                     },
                                   )
@@ -101,9 +113,15 @@ class _ManagementScreenState extends State<ManagementScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
+          Navigator.of(context)
+              .push(MaterialPageRoute(
             builder: (_) => const AddEditNewsScreen(),
-          ));
+          ))
+              .then((_) {
+            // Muat ulang data setelah kembali dari halaman tambah, jika diperlukan
+            Provider.of<NewsProvider>(context, listen: false)
+                .fetchManagedNews();
+          });
         },
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.add),

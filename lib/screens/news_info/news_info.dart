@@ -12,6 +12,7 @@ class NewsInfo extends StatelessWidget {
   const NewsInfo({super.key, required this.news});
 
   void _deleteNews(BuildContext context) async {
+    if (news.id == null) return;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -30,11 +31,9 @@ class NewsInfo extends StatelessWidget {
 
     if (confirmed == true) {
       final newsProvider = Provider.of<NewsProvider>(context, listen: false);
-      if (context.mounted) {
-        final success = await newsProvider.deleteNews(news.id!);
-        if (success && context.mounted) {
-          Navigator.of(context).pop();
-        }
+      final success = await newsProvider.deleteNews(news.id!);
+      if (success && context.mounted) {
+        Navigator.of(context).pop();
       }
     }
   }
@@ -42,7 +41,15 @@ class NewsInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    const String corsProxy = "https://corsproxy.io/?";
+    // const String corsProxy = "https://corsproxy.io/?"; // Kita coba nonaktifkan proxy
+
+    // URL gambar yang akan di-debug
+    final imageUrl = news.featuredImageUrl;
+
+    // Mencetak URL ke debug console untuk diagnosis
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      print("NewsInfo trying to load image: $imageUrl");
+    }
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -71,12 +78,15 @@ class NewsInfo extends StatelessWidget {
         scrollDirection: Axis.vertical,
         child: Column(
           children: [
-            if (news.urlToImage != null && news.urlToImage!.isNotEmpty)
+            if (imageUrl != null && imageUrl.isNotEmpty)
               Image.network(
-                corsProxy + Uri.encodeComponent(news.urlToImage!),
+                // Menggunakan URL langsung tanpa proxy
+                imageUrl,
                 fit: BoxFit.contain,
                 width: size.width,
                 errorBuilder: (context, error, stackTrace) {
+                  // Jika error, kita cetak juga errornya untuk info tambahan
+                  print("Image load error: $error");
                   return Container(
                     height: 220,
                     width: size.width,
@@ -119,6 +129,16 @@ class NewsInfo extends StatelessWidget {
                       ),
                     ],
                   ),
+                  if (news.summary != null && news.summary!.isNotEmpty) ...[
+                    const SizedBox(height: 20),
+                    Text(
+                      news.summary!,
+                      style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.grey[700]),
+                    ),
+                  ],
                   const SizedBox(height: 20),
                   Text(
                     news.content ?? 'Konten tidak tersedia.',

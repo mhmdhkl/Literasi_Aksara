@@ -11,8 +11,15 @@ class NewsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // GANTI DENGAN PROXY BARU YANG LEBIH STABIL
-    const String corsProxy = "https://corsproxy.io/?";
+    // const String corsProxy = "https://corsproxy.io/?"; // Kita coba nonaktifkan proxy
+
+    // URL gambar yang akan di-debug
+    final imageUrl = article.featuredImageUrl;
+
+    // Mencetak URL ke debug console untuk diagnosis
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      print("NewsCard trying to load image: $imageUrl");
+    }
 
     return GestureDetector(
       onTap: () {
@@ -32,14 +39,16 @@ class NewsCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (article.urlToImage != null && article.urlToImage!.isNotEmpty)
+              if (imageUrl != null && imageUrl.isNotEmpty)
                 Image.network(
-                  // Menggunakan proxy baru
-                  corsProxy + Uri.encodeComponent(article.urlToImage!),
+                  // Menggunakan URL langsung tanpa proxy
+                  imageUrl,
                   height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
+                    // Jika error, kita cetak juga errornya untuk info tambahan
+                    print("Image load error: $error");
                     return Container(
                       height: 200,
                       color: Colors.grey[200],
@@ -63,7 +72,6 @@ class NewsCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ... (sisa kode tidak berubah)
                     Text(
                       article.title ?? 'No Title',
                       maxLines: 2,
@@ -112,7 +120,9 @@ class NewsCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      article.content ?? 'No content available.',
+                      article.summary ??
+                          article.content ??
+                          'No content available.',
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
