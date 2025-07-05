@@ -1,8 +1,11 @@
+// lib/screens/news_info/news_info.dart
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:Aksara_Literasi/common/colors.dart';
 import 'package:Aksara_Literasi/models/news_model.dart';
+import 'package:Aksara_Literasi/providers/auth_provider.dart';
 import 'package:Aksara_Literasi/providers/news_provider.dart';
 import 'package:Aksara_Literasi/screens/add_edit_news_screen.dart';
 
@@ -41,12 +44,10 @@ class NewsInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    // const String corsProxy = "https://corsproxy.io/?"; // Kita coba nonaktifkan proxy
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final bool isAdmin = authProvider.currentUser?.role == 'admin';
 
-    // URL gambar yang akan di-debug
     final imageUrl = news.featuredImageUrl;
-
-    // Mencetak URL ke debug console untuk diagnosis
     if (imageUrl != null && imageUrl.isNotEmpty) {
       print("NewsInfo trying to load image: $imageUrl");
     }
@@ -60,18 +61,21 @@ class NewsInfo extends StatelessWidget {
           child: const Icon(Icons.arrow_back_sharp, color: AppColors.white),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.edit, color: AppColors.white),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => AddEditNewsScreen(news: news),
-              ));
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete, color: AppColors.white),
-            onPressed: () => _deleteNews(context),
-          )
+          // Tampilkan tombol edit dan hapus hanya jika admin
+          if (isAdmin)
+            IconButton(
+              icon: const Icon(Icons.edit, color: AppColors.white),
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => AddEditNewsScreen(news: news),
+                ));
+              },
+            ),
+          if (isAdmin)
+            IconButton(
+              icon: const Icon(Icons.delete, color: AppColors.white),
+              onPressed: () => _deleteNews(context),
+            )
         ],
       ),
       body: SingleChildScrollView(
@@ -80,12 +84,10 @@ class NewsInfo extends StatelessWidget {
           children: [
             if (imageUrl != null && imageUrl.isNotEmpty)
               Image.network(
-                // Menggunakan URL langsung tanpa proxy
                 imageUrl,
                 fit: BoxFit.contain,
                 width: size.width,
                 errorBuilder: (context, error, stackTrace) {
-                  // Jika error, kita cetak juga errornya untuk info tambahan
                   print("Image load error: $error");
                   return Container(
                     height: 220,

@@ -1,6 +1,9 @@
+// lib/screens/home/home.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Aksara_Literasi/common/colors.dart';
+import 'package:Aksara_Literasi/providers/auth_provider.dart';
 import 'package:Aksara_Literasi/providers/news_provider.dart';
 import 'package:Aksara_Literasi/screens/home/widgets/news_card.dart';
 import 'package:Aksara_Literasi/screens/management/management_screen.dart';
@@ -16,7 +19,6 @@ class _HomeState extends State<Home> {
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
 
-  // MODIFIKASI: Menggunakan Map untuk kategori, termasuk 'Semua'
   final Map<String, String> _categories = {
     'Semua': 'Semua',
     'Business': 'Bisnis',
@@ -66,7 +68,6 @@ class _HomeState extends State<Home> {
             scrollDirection: Axis.horizontal,
             itemCount: _categories.length,
             itemBuilder: (context, index) {
-              // MODIFIKASI: Ambil key dan value dari Map
               final categoryKey = _categories.keys.elementAt(index);
               final categoryValue = _categories.values.elementAt(index);
               final bool isSelected =
@@ -77,12 +78,11 @@ class _HomeState extends State<Home> {
                     left: index == 0 ? 16.0 : 8.0,
                     right: index == _categories.length - 1 ? 16.0 : 0),
                 child: ChoiceChip(
-                  label: Text(categoryValue), // Tampilkan nilai Indonesia
+                  label: Text(categoryValue),
                   selected: isSelected,
                   checkmarkColor: Colors.white,
                   onSelected: (selected) {
                     if (selected) {
-                      // Kirim nilai English ke provider untuk filtering
                       newsProvider.selectCategory(categoryKey);
                     }
                   },
@@ -101,6 +101,10 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    // Dapatkan role pengguna dari AuthProvider
+    final authProvider = Provider.of<AuthProvider>(context);
+    final bool isAdmin = authProvider.currentUser?.role == 'admin';
+
     return Scaffold(
       appBar: AppBar(
         title: _isSearching
@@ -125,7 +129,8 @@ class _HomeState extends State<Home> {
               });
             },
           ),
-          if (!_isSearching)
+          // Tampilkan tombol manajemen hanya jika user adalah admin
+          if (isAdmin && !_isSearching)
             IconButton(
               icon: const Icon(Icons.settings_outlined),
               onPressed: () {
@@ -135,6 +140,13 @@ class _HomeState extends State<Home> {
                         builder: (_) => const ManagementScreen()));
               },
             ),
+          // Tombol Logout
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              Provider.of<AuthProvider>(context, listen: false).logout();
+            },
+          ),
         ],
       ),
       body: RefreshIndicator(
