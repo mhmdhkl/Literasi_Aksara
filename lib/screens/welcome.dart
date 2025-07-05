@@ -1,9 +1,12 @@
-import 'dart:async';
+// lib/screens/welcome.dart
 
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:Aksara_Literasi/common/colors.dart';
 import 'package:Aksara_Literasi/common/common.dart';
 import 'package:Aksara_Literasi/common/widgets/no_connectivity.dart';
+import 'package:Aksara_Literasi/providers/auth_provider.dart';
 import 'package:Aksara_Literasi/screens/home/home.dart';
 
 class Welcome extends StatefulWidget {
@@ -17,11 +20,15 @@ class _WelcomeState extends State<Welcome> {
   @override
   void initState() {
     super.initState();
-    checkConnectivity();
+    _initializeApp();
   }
 
-  Future<void> checkConnectivity() async {
+  Future<void> _initializeApp() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     if (await getInternetStatus()) {
+      await authProvider.login("news@itg.ac.id", "ITG#news");
+
       Timer(const Duration(seconds: 2), () {
         if (!mounted) return;
         Navigator.of(context).pushReplacement(
@@ -32,7 +39,7 @@ class _WelcomeState extends State<Welcome> {
       if (!mounted) return;
       Navigator.of(context, rootNavigator: true)
           .push(MaterialPageRoute(builder: (context) => const NoConnectivity()))
-          .then((value) => checkConnectivity());
+          .then((value) => _initializeApp());
     }
   }
 
