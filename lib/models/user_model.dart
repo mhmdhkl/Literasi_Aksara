@@ -1,12 +1,9 @@
-// lib/models/user_model.dart
-
 import 'dart:convert';
 
 class User {
   final String username;
   final String password;
-  final String role; // "admin" or "consumer"
-
+  final String role;
   User({
     required this.username,
     required this.password,

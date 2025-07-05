@@ -15,11 +15,6 @@ class _ManagementScreenState extends State<ManagementScreen> {
   @override
   void initState() {
     super.initState();
-    // Data sudah di-fetch di halaman Home, kita tidak perlu fetch ulang
-    // kecuali jika ingin memastikan data selalu terbaru saat masuk halaman ini.
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   Provider.of<NewsProvider>(context, listen: false).fetchManagedNews();
-    // });
   }
 
   @override
@@ -33,7 +28,6 @@ class _ManagementScreenState extends State<ManagementScreen> {
       ),
       body: Consumer<NewsProvider>(
         builder: (context, newsProvider, child) {
-          // MODIFIKASI: Gunakan filteredArticles
           if (newsProvider.isManagedLoading &&
               newsProvider.filteredArticles.isEmpty) {
             return const Center(child: CircularProgressIndicator());
@@ -42,10 +36,8 @@ class _ManagementScreenState extends State<ManagementScreen> {
           return RefreshIndicator(
             onRefresh: () => newsProvider.fetchManagedNews(),
             child: ListView.builder(
-              // MODIFIKASI: Gunakan filteredArticles
               itemCount: newsProvider.filteredArticles.length,
               itemBuilder: (context, index) {
-                // MODIFIKASI: Gunakan filteredArticles
                 final news = newsProvider.filteredArticles[index];
                 return Card(
                   margin:
@@ -66,7 +58,6 @@ class _ManagementScreenState extends State<ManagementScreen> {
                               builder: (_) => AddEditNewsScreen(news: news),
                             ))
                                 .then((_) {
-                              // Muat ulang data setelah kembali dari halaman edit, jika diperlukan
                               newsProvider.fetchManagedNews();
                             });
                           },
@@ -118,7 +109,6 @@ class _ManagementScreenState extends State<ManagementScreen> {
             builder: (_) => const AddEditNewsScreen(),
           ))
               .then((_) {
-            // Muat ulang data setelah kembali dari halaman tambah, jika diperlukan
             Provider.of<NewsProvider>(context, listen: false)
                 .fetchManagedNews();
           });

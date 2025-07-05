@@ -19,7 +19,6 @@ class _AddEditNewsScreenState extends State<AddEditNewsScreen> {
   String? _category;
   bool get isEditMode => widget.news != null;
 
-  // MODIFIKASI: Menggunakan Map untuk memisahkan nilai API (key) dan nilai tampilan (value)
   final Map<String, String> _categoryOptions = {
     'Business': 'Bisnis',
     'Technology': 'Teknologi',
@@ -102,17 +101,14 @@ class _AddEditNewsScreenState extends State<AddEditNewsScreen> {
                 decoration: InputDecoration(labelText: 'Ringkasan (Summary)'),
                 onSaved: (value) => _summary = value!,
               ),
-
-              // MODIFIKASI: Dropdown sekarang dibuat dari Map
               DropdownButtonFormField<String>(
                 value: _category,
                 decoration: InputDecoration(labelText: 'Kategori'),
                 hint: Text('Pilih Kategori'),
                 items: _categoryOptions.entries.map((entry) {
                   return DropdownMenuItem<String>(
-                    value: entry.key, // Nilai internal (English)
-                    child:
-                        Text(entry.value), // Teks yang ditampilkan (Indonesia)
+                    value: entry.key,
+                    child: Text(entry.value),
                   );
                 }).toList(),
                 onChanged: (String? newValue) {
@@ -124,7 +120,6 @@ class _AddEditNewsScreenState extends State<AddEditNewsScreen> {
                     value == null ? 'Kategori harus dipilih' : null,
                 onSaved: (value) => _category = value,
               ),
-
               TextFormField(
                 initialValue: _content,
                 decoration: InputDecoration(labelText: 'Konten'),

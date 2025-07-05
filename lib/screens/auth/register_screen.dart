@@ -1,5 +1,3 @@
-// lib/screens/auth/register_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Aksara_Literasi/providers/auth_provider.dart';
@@ -15,7 +13,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  String _role = 'consumer'; // Default role
+  String _role = 'consumer';
 
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
@@ -27,7 +25,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       if (success) {
-        // Navigator.pop(context) akan kembali ke AuthWrapper yang kemudian akan redirect ke Home
         Navigator.of(context).pop();
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -98,7 +95,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                // Opsi untuk memilih role, hanya 'konsumen' yang bisa dipilih saat mendaftar
                 DropdownButtonFormField<String>(
                   value: _role,
                   decoration: const InputDecoration(
@@ -110,7 +106,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       value: 'consumer',
                       child: Text('Pembaca Berita'),
                     ),
-                    // Admin tidak bisa didaftarkan dari sini
                   ],
                   onChanged: (value) {
                     setState(() {

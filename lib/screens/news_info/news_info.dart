@@ -1,5 +1,3 @@
-// lib/screens/news_info/news_info.dart
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -61,7 +59,6 @@ class NewsInfo extends StatelessWidget {
           child: const Icon(Icons.arrow_back_sharp, color: AppColors.white),
         ),
         actions: [
-          // Tampilkan tombol edit dan hapus hanya jika admin
           if (isAdmin)
             IconButton(
               icon: const Icon(Icons.edit, color: AppColors.white),

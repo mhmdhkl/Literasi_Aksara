@@ -11,7 +11,7 @@ class News {
   String? content;
   List<String>? tags;
   bool? isPublished;
-  String? category; // Menambahkan field category
+  String? category;
 
   News({
     this.id,
@@ -45,7 +45,7 @@ class News {
       author:
           json['author'] != null ? json['author']['name'] : 'Unknown Author',
       title: json['title'],
-      featuredImageUrl: json['featured_image_url'], // Sesuaikan dengan response
+      featuredImageUrl: json['featured_image_url'],
       publishedAt: json['updated_at'] ?? json['created_at'],
       content: json['content'],
       summary: json['summary'],
@@ -56,20 +56,16 @@ class News {
   }
 
   Map<String, dynamic> toJson() {
-    // Hanya sertakan field yang tidak null untuk menghindari error validasi di server
     final Map<String, dynamic> data = {
       'title': title,
       'content': content,
       'summary': summary,
       'featuredImageUrl': featuredImageUrl,
-      // Memberikan nilai default jika null
       'tags': tags ?? [],
-      'isPublished':
-          isPublished ?? true, // Asumsikan defaultnya true saat menyimpan
-      'category': category ?? 'General', // Beri kategori default
+      'isPublished': isPublished ?? true,
+      'category': category ?? 'General',
     };
 
-    // Hapus key dari map jika nilainya null, kecuali untuk field yang wajib
     data.removeWhere(
         (key, value) => value == null && key != 'title' && key != 'content');
 

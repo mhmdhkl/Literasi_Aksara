@@ -1,5 +1,3 @@
-// lib/services/my_api_service.dart
-
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:Aksara_Literasi/common/constants.dart';
@@ -24,7 +22,6 @@ class MyApiService {
     return headers;
   }
 
-  // Fungsi untuk mencetak informasi request sebelum dikirim
   void _printRequestInfo(String method, String url,
       {Map<String, String>? headers}) {
     debugPrint('--- API Request ---');
@@ -34,7 +31,6 @@ class MyApiService {
     debugPrint('-------------------');
   }
 
-  // POST /api/auth/login
   Future<http.Response> login(String email, String password) {
     final url = '$_endpoint/api/auth/login';
     final headers = _headers;
@@ -43,15 +39,13 @@ class MyApiService {
     return http.post(Uri.parse(url), headers: headers, body: body);
   }
 
-  // GET /api/author/news
   Future<http.Response> getManagedNews() {
     final url = '$_endpoint/api/author/news';
     final headers = _headers;
-    _printRequestInfo('GET', url, headers: headers); // Cetak info request
+    _printRequestInfo('GET', url, headers: headers);
     return http.get(Uri.parse(url), headers: headers);
   }
 
-  // POST /api/author/news
   Future<http.Response> createNews(Map<String, dynamic> data) {
     final url = '$_endpoint/api/author/news';
     final headers = _headers;
@@ -60,7 +54,6 @@ class MyApiService {
     return http.post(Uri.parse(url), headers: headers, body: body);
   }
 
-  // PUT /api/author/news/{id}
   Future<http.Response> updateNews(String id, Map<String, dynamic> data) {
     final url = '$_endpoint/api/author/news/$id';
     final headers = _headers;
@@ -69,7 +62,6 @@ class MyApiService {
     return http.put(Uri.parse(url), headers: headers, body: body);
   }
 
-  // DELETE /api/author/news/{id}
   Future<http.Response> deleteNews(String id) {
     final url = '$_endpoint/api/author/news/$id';
     final headers = _headers;

@@ -1,5 +1,3 @@
-// lib/screens/home/home.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Aksara_Literasi/common/colors.dart';
@@ -101,7 +99,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    // Dapatkan role pengguna dari AuthProvider
     final authProvider = Provider.of<AuthProvider>(context);
     final bool isAdmin = authProvider.currentUser?.role == 'admin';
 
@@ -129,7 +126,6 @@ class _HomeState extends State<Home> {
               });
             },
           ),
-          // Tampilkan tombol manajemen hanya jika user adalah admin
           if (isAdmin && !_isSearching)
             IconButton(
               icon: const Icon(Icons.settings_outlined),
@@ -140,7 +136,6 @@ class _HomeState extends State<Home> {
                         builder: (_) => const ManagementScreen()));
               },
             ),
-          // Tombol Logout
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {

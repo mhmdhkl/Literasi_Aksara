@@ -11,12 +11,8 @@ class NewsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // const String corsProxy = "https://corsproxy.io/?"; // Kita coba nonaktifkan proxy
-
-    // URL gambar yang akan di-debug
     final imageUrl = article.featuredImageUrl;
 
-    // Mencetak URL ke debug console untuk diagnosis
     if (imageUrl != null && imageUrl.isNotEmpty) {
       print("NewsCard trying to load image: $imageUrl");
     }
@@ -41,13 +37,11 @@ class NewsCard extends StatelessWidget {
             children: [
               if (imageUrl != null && imageUrl.isNotEmpty)
                 Image.network(
-                  // Menggunakan URL langsung tanpa proxy
                   imageUrl,
                   height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
-                    // Jika error, kita cetak juga errornya untuk info tambahan
                     print("Image load error: $error");
                     return Container(
                       height: 200,

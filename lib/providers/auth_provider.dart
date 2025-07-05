@@ -1,5 +1,3 @@
-// lib/providers/auth_provider.dart
-
 import 'package:flutter/material.dart';
 import 'package:Aksara_Literasi/models/user_model.dart';
 import 'package:Aksara_Literasi/services/local_auth_service.dart';
@@ -18,7 +16,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> _initialize() async {
-    await _localAuthService.init(); // Pastikan admin default ada
+    await _localAuthService.init();
     await _checkLoginStatus();
   }
 
@@ -50,7 +48,6 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     final user = await _localAuthService.register(username, password, role);
     if (user != null) {
-      // Otomatis login setelah register
       _currentUser = user;
       _isLoading = false;
       notifyListeners();
@@ -58,7 +55,7 @@ class AuthProvider extends ChangeNotifier {
     }
     _isLoading = false;
     notifyListeners();
-    return false; // Gagal karena username sudah ada
+    return false;
   }
 
   Future<void> logout() async {
